@@ -25,13 +25,27 @@ server.go -> Inicia e configura todo o servidor e rotas
 
 ## Como rodar localmente?
 
+0 - Criar um .env
+> Como isso é apenas um teste vou disponibilizar um:
+```
+APP_PORT=3000
+
+DB_HOST=database                
+DB_USER=postgres
+DB_PASSWORD=deliverymuch
+DB_NAME=deliverymuch
+DB_PORT=5432
+```
+
 1 - Executar:
 ```
-docker-compose up -f docker-compose.yml -f docker-compose.dev.yml
+docker-compose up -f docker-compose.yml
 ```
 
 2 - Popular:
-> Garanta que voce tenha o make instalado na sua máquina. Normalmente ambientes linux já tem. Caso contrario pode executar manualmente usando `go run ./tools/populate/main.go`
 ```
-make populate
+#Docker
+docker exec -it <<container-id>> /populate
 ```
+
+3 - Verificar postgres para garantir que os produtos foram populados

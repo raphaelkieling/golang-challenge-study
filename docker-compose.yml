@@ -8,6 +8,7 @@ services:
     ports:
       - 3000:3000
     env_file: ./.env
+    command: ["./resource/wait-for-postgres.sh", "", "/app"]
     networks:
       - app-network
   rabbitmq:
@@ -29,16 +30,16 @@ services:
       - rabbitmq
     restart: on-failure
   database:
-    image: postgres:10.4
+    image: postgres:latest
     restart: always
+    env_file: ./.env
     environment:
-      - POSTGRES_USER=deliverymuch
-      - POSTGRES_PASSWORD=deliverymuch
-      - POSTGRES_DB=deliverymuch
+      - POSTGRES_PASSWORD=$DB_PASSWORD
+      - POSTGRES_DB=$DB_NAME
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
     ports:
-      - 5436:5432
+      - 5432:5432
     networks:
       - app-network
 networks:

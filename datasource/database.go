@@ -1,4 +1,4 @@
-package main
+package datasource
 
 import (
 	"delivery-much-challenge/conf"
@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func databaseConnect(conf *conf.Config) *gorm.DB {
+func DatabaseConnect(conf *conf.Config) *gorm.DB {
 	fmt.Println(conf)
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", conf.DbHost, conf.DbUser, conf.DbPassword, conf.DbName, conf.DbPort)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})

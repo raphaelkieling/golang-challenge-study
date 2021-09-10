@@ -1,10 +1,7 @@
 package conf
 
 import (
-	"fmt"
 	"os"
-
-	"github.com/joho/godotenv"
 )
 
 const DEFAULT_PORT = "3000"
@@ -18,11 +15,8 @@ type Config struct {
 	Port       string
 }
 
-func Env() *Config {
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Println("Error loading .env file, trying get from env")
-	}
+func Env(load func(filenames ...string) (err error)) *Config {
+	load()
 
 	conf := &Config{
 		DbHost:     os.Getenv("DB_HOST"),
@@ -32,8 +26,6 @@ func Env() *Config {
 		DbPort:     os.Getenv("DB_PORT"),
 		Port:       os.Getenv("APP_PORT"),
 	}
-
-	fmt.Println(conf)
 
 	if conf.Port == "" {
 		conf.Port = DEFAULT_PORT

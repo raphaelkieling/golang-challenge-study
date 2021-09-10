@@ -2,16 +2,26 @@ package main
 
 import (
 	"delivery-much-challenge/conf"
-	"fmt"
+	"delivery-much-challenge/datasource"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-func createServer(conf *conf.Config) *fiber.App {
+type ServerConfig struct {
+	config            *conf.Config
+	productRepository *datasource.ProductRepository
+}
+
+func createServer(conf ServerConfig) *fiber.App {
 	app := fiber.New()
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString(fmt.Sprintf("Hello, World 👋! %s", conf.DbName))
+	app.Get("/welcome", func(c *fiber.Ctx) error {
+		return c.SendString("Hello, World 👋")
+	})
+
+	app.Get("/products", func(c *fiber.Ctx) error {
+		products, _ := conf.productRepository.GetAll()
+		return c.JSON(products)
 	})
 
 	return app
