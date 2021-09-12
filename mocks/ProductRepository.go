@@ -10,8 +10,8 @@ type ProductRepositoryMock struct {
 	mock.Mock
 }
 
-func (m *ProductRepositoryMock) GetAll() ([]datasource.Product, error) {
-	args := m.Called()
+func (m *ProductRepositoryMock) GetAllByName(name string) ([]datasource.Product, error) {
+	args := m.Called(name)
 	return args.Get(0).([]datasource.Product), args.Error(1)
 }
 

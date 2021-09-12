@@ -2,19 +2,14 @@ package main
 
 import (
 	"delivery-much-challenge/conf"
-	"delivery-much-challenge/datasource"
+	"delivery-much-challenge/service"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-type IProductRepository interface {
-	GetAll() ([]datasource.Product, error)
-	Populate(products []datasource.Product) error
-}
-
 type ServerConfig struct {
-	config            *conf.Config
-	productRepository IProductRepository
+	config         *conf.Config
+	productService service.IProductService
 }
 
 func createServer(conf ServerConfig) *fiber.App {
@@ -24,8 +19,9 @@ func createServer(conf ServerConfig) *fiber.App {
 		return c.SendString("Hello, World 👋")
 	})
 
-	app.Get("/products", func(c *fiber.Ctx) error {
-		products, _ := conf.productRepository.GetAll()
+	app.Get("/products/:name", func(c *fiber.Ctx) error {
+		name := c.Params("name")
+		products, _ := conf.productService.GetAllByName(name)
 		return c.JSON(products)
 	})
 
