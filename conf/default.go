@@ -18,7 +18,7 @@ type Config struct {
 func Env(load func(filenames ...string) (err error)) *Config {
 	load()
 
-	conf := &Config{
+	configuration := &Config{
 		DbHost:     os.Getenv("DB_HOST"),
 		DbPassword: os.Getenv("DB_PASSWORD"),
 		DbUser:     os.Getenv("DB_USER"),
@@ -27,9 +27,9 @@ func Env(load func(filenames ...string) (err error)) *Config {
 		Port:       os.Getenv("APP_PORT"),
 	}
 
-	if conf.Port == "" {
-		conf.Port = DEFAULT_PORT
+	if configuration.Port == "" {
+		configuration.Port = DEFAULT_PORT
 	}
 
-	return conf
+	return configuration
 }

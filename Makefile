@@ -1,7 +1,7 @@
 populate: 
 	go run ./pkg/populate/populate.go
 run:
-	go run *.go
+	go run .
 test:   
 	go test ./...
 build:

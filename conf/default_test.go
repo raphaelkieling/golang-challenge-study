@@ -1,6 +1,7 @@
-package conf
+package conf_test
 
 import (
+	"delivery-much-challenge/conf"
 	"delivery-much-challenge/mocks"
 	"os"
 	"testing"
@@ -14,7 +15,7 @@ func TestShouldTryPopulateUsingTheLoader(t *testing.T) {
 	mockLoader.On("Load", mock.Anything).Return(nil)
 
 	os.Clearenv()
-	Env(mockLoader.Load)
+	conf.Env(mockLoader.Load)
 	mockLoader.AssertExpectations(t)
 	mockLoader.AssertNumberOfCalls(t, "Load", 1)
 }
@@ -24,8 +25,8 @@ func TestShouldReturnAEmptyConfig(t *testing.T) {
 	mockLoader.On("Load", mock.Anything).Return(nil)
 
 	os.Clearenv()
-	env := Env(mockLoader.Load)
-	assert.Equal(t, env, &Config{
+	env := conf.Env(mockLoader.Load)
+	assert.Equal(t, env, &conf.Config{
 		Port: "3000",
 	})
 }
@@ -36,8 +37,8 @@ func TestShouldPopulateConfig(t *testing.T) {
 
 	os.Clearenv()
 	os.Setenv("APP_PORT", "test")
-	env := Env(mockLoader.Load)
-	assert.Equal(t, env, &Config{
+	env := conf.Env(mockLoader.Load)
+	assert.Equal(t, env, &conf.Config{
 		Port: "test",
 	})
 }
@@ -48,8 +49,8 @@ func TestShouldHaveDefaultPortValue(t *testing.T) {
 
 	os.Clearenv()
 	os.Setenv("APP_PORT", "3000")
-	env := Env(mockLoader.Load)
-	assert.Equal(t, env, &Config{
+	env := conf.Env(mockLoader.Load)
+	assert.Equal(t, env, &conf.Config{
 		Port: "3000",
 	})
 }

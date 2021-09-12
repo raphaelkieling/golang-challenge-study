@@ -1,7 +1,9 @@
 package main
 
 import (
+	"delivery-much-challenge/datasource"
 	"delivery-much-challenge/mocks"
+	"encoding/json"
 	"io"
 	"net/http"
 	"testing"
@@ -27,7 +29,11 @@ func TestShouldReturnWelcome(t *testing.T) {
 }
 
 func TestShouldReturnNilWhenTakeProducts(t *testing.T) {
-	mockRepository := mocks.ProductRepositoryMock{}
+	expectedValue := []datasource.Product{}
+
+	mockRepository := &mocks.ProductRepositoryMock{}
+	mockRepository.On("GetAll").Return(expectedValue, nil)
+
 	server := createServer(ServerConfig{
 		productRepository: mockRepository,
 	})
@@ -35,6 +41,8 @@ func TestShouldReturnNilWhenTakeProducts(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/products", nil)
 	body, _ := server.Test(req)
 	result, _ := io.ReadAll(body.Body)
-	assert.Equal(t, string(result), "Hello, World 👋")
+
+	data, _ := json.Marshal(expectedValue)
+	assert.Equal(t, string(result), string(data))
 	assert.Equal(t, body.StatusCode, 200)
 }

@@ -7,9 +7,14 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+type IProductRepository interface {
+	GetAll() ([]datasource.Product, error)
+	Populate(products []datasource.Product) error
+}
+
 type ServerConfig struct {
 	config            *conf.Config
-	productRepository *datasource.ProductRepository
+	productRepository IProductRepository
 }
 
 func createServer(conf ServerConfig) *fiber.App {
