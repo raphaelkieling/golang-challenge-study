@@ -5,6 +5,7 @@ services:
     depends_on:
       - stock-service
       - database
+      - rabbitmq
     ports:
       - 3000:3000
     env_file: ./.env

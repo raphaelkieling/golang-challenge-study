@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -51,23 +52,46 @@ func TestShouldReturnNilWhenTakeProducts(t *testing.T) {
 }
 
 func TestShouldSaveANewOrder(t *testing.T) {
-	expectedValue := []datasource.Product{}
-
-	mockRepository := &mocks.ProductRepositoryMock{}
-	mockRepository.On("GetAllByName", "test").Return(expectedValue, nil)
-	productService := service.ProductService{
-		ProductRepository: mockRepository,
+	// Mocking
+	orderCreatedExpected := datasource.Order{
+		Products: []datasource.OrderProduct{
+			{
+				Name:     "Test-Product-Name",
+				Quantity: 2,
+				Price:    10,
+			},
+		},
+		Total: 20.0,
 	}
 
+	mockOrderRepository := &mocks.OrderRepositoryMock{}
+	mockProductRepository := &mocks.ProductRepositoryMock{}
+
+	orderService := service.OrderService{
+		ProductRepository: mockProductRepository,
+		OrderRepository:   mockOrderRepository,
+	}
+
+	mockOrderRepository.On("Save", orderCreatedExpected).Return(orderCreatedExpected, nil)
+
+	mockedProducts := []datasource.Product{
+		{
+			Name:     "Test-Product-Name",
+			Price:    10,
+			Quantity: 1,
+		},
+	}
+	mockProductRepository.On("GetAllByName", mockedProducts[0].Name).Return(mockedProducts, nil)
+
 	server := createServer(ServerConfig{
-		productService: &productService,
+		orderService: &orderService,
 	})
 
-	req, _ := http.NewRequest("POST", "/orders", nil)
+	req, _ := http.NewRequest("POST", "/orders", strings.NewReader(`{"products":[{"quantity":2,"name":"Test-Product-Name"}]}`))
 	body, _ := server.Test(req)
 	result, _ := io.ReadAll(body.Body)
 
-	data, _ := json.Marshal(expectedValue)
+	data, _ := json.Marshal(orderCreatedExpected)
 	assert.Equal(t, string(result), string(data))
 	assert.Equal(t, body.StatusCode, 200)
 }

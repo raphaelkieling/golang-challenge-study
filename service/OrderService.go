@@ -12,7 +12,7 @@ type IOrderService interface {
 
 type OrderService struct {
 	OrderRepository   datasource.IOrderRepository
-	ProductRepository datasource.ProductRepository
+	ProductRepository datasource.IProductReposity
 }
 
 func (p *OrderService) Save(orderCreate dto.OrderCreate) (datasource.Order, error) {
@@ -27,7 +27,7 @@ func (p *OrderService) Save(orderCreate dto.OrderCreate) (datasource.Order, erro
 		}
 
 		product := productsFoundByName[0]
-		sumOfProductPrices += product.Price
+		sumOfProductPrices += product.Price * productOrderCreate.Quantity
 
 		orderProducts = append(orderProducts, datasource.OrderProduct{
 			Name:     productOrderCreate.Name,

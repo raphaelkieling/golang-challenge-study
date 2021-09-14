@@ -13,6 +13,9 @@ type Config struct {
 	DbName     string
 	DbPort     string
 	Port       string
+	AmqpHost   string
+	AmqpUser   string
+	AmqpPass   string
 }
 
 func Env(load func(filenames ...string) (err error)) *Config {
@@ -25,6 +28,9 @@ func Env(load func(filenames ...string) (err error)) *Config {
 		DbName:     os.Getenv("DB_NAME"),
 		DbPort:     os.Getenv("DB_PORT"),
 		Port:       os.Getenv("APP_PORT"),
+		AmqpHost:   os.Getenv("AMQP_HOST"),
+		AmqpUser:   os.Getenv("AMQP_USER"),
+		AmqpPass:   os.Getenv("AMQP_PASSWORD"),
 	}
 
 	if configuration.Port == "" {

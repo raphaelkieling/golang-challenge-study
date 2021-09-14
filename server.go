@@ -2,6 +2,7 @@ package main
 
 import (
 	"delivery-much-challenge/conf"
+	"delivery-much-challenge/dto"
 	"delivery-much-challenge/service"
 
 	"github.com/gofiber/fiber/v2"
@@ -10,6 +11,7 @@ import (
 type ServerConfig struct {
 	config         *conf.Config
 	productService service.IProductService
+	orderService   service.IOrderService
 }
 
 func createServer(conf ServerConfig) *fiber.App {
@@ -23,6 +25,13 @@ func createServer(conf ServerConfig) *fiber.App {
 		name := c.Params("name")
 		products, _ := conf.productService.GetAllByName(name)
 		return c.JSON(products)
+	})
+
+	app.Post("/orders", func(c *fiber.Ctx) error {
+		body := c.Body()
+		orderCreate, _ := dto.UnmarshalOrderCreate(body)
+		orderSaved, _ := conf.orderService.Save(orderCreate)
+		return c.JSON(orderSaved)
 	})
 
 	return app

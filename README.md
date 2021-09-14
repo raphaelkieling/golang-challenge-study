@@ -48,4 +48,13 @@ docker-compose up -f docker-compose.yml
 docker exec -it <<container-id>> /populate
 ```
 
-3 - Verificar postgres para garantir que os produtos foram populados
+## Referencias
+
+Este é meu primeiro projeto go tirando os estudos de sintaxe. Então vou tentar colocar aqui referencias que estou utilizando para basear minhas desições, algumas são chutes ou experiencias proprias em outras linguagens (kotlin, java, javascript, php, ...).
+
+- https://stackoverflow.com/questions/25161774/what-are-conventions-for-filenames-in-go/25162021
+- https://www.youtube.com/watch?v=iYrMAVSOkkA
+- https://www.youtube.com/watch?v=LvgVSSpwND8&t=709s
+- https://www.youtube.com/watch?v=YEKjSzIwAdA&t=751s
+- https://www.youtube.com/watch?v=DqHb5KBe7qI
+- https://github.com/golang-standards/project-layout
