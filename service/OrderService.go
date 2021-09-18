@@ -29,6 +29,10 @@ func (p *OrderService) Save(orderCreate dto.OrderCreate) (datasource.Order, erro
 		product := productsFoundByName[0]
 		sumOfProductPrices += product.Price * productOrderCreate.Quantity
 
+		if (productOrderCreate.Quantity - product.Quantity) >= 0 {
+			return datasource.Order{}, errors.New("produto fora de estoque")
+		}
+
 		orderProducts = append(orderProducts, datasource.OrderProduct{
 			Name:     productOrderCreate.Name,
 			Price:    product.Price,

@@ -41,11 +41,11 @@ func initServer(database *gorm.DB, environmentConfiguration *conf.Config) *fiber
 }
 
 func initRabbitMQConsumer(environmentConfiguration *conf.Config) {
-	amqpConsumer := AMQPConsumer{
+	amqpConsumer := AMQPStockConsumer{
 		config: environmentConfiguration,
 	}
 
-	go amqpConsumer.Start()
+	amqpConsumer.Start()
 }
 
 func main() {

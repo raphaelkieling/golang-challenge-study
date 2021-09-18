@@ -7,11 +7,11 @@ import (
 	"github.com/streadway/amqp"
 )
 
-type AMQPConsumer struct {
+type AMQPStockConsumer struct {
 	config *conf.Config
 }
 
-func (a *AMQPConsumer) Start() {
+func (a *AMQPStockConsumer) Start() chan<- string {
 	dns := fmt.Sprintf("amqp://%s:%s@%s:5672/", a.config.AmqpUser, a.config.AmqpPass, a.config.AmqpHost)
 
 	conn, err := amqp.Dial(dns)
@@ -19,23 +19,25 @@ func (a *AMQPConsumer) Start() {
 	if err != nil {
 		fmt.Println(fmt.Errorf("%s: %s", "rabbitmq error to connect", err))
 	}
-	defer conn.Close()
 
 	ch, err := conn.Channel()
 	if err != nil {
 		fmt.Println(fmt.Errorf("%s: %s", "failed to open a channel", err))
 	}
-	defer ch.Close()
 
-	queue, err := ch.QueueDeclare("Test", false, false, false, false, nil)
+	queue, err := ch.QueueDeclare("stock-consumer", false, false, false, false, nil)
 	if err != nil {
 		fmt.Println(fmt.Errorf("%s: %s", "failed to declare a queue", err))
 	}
-	defer ch.QueueDelete(queue.Name, false, false, true)
 
-	err = ch.QueueBind(queue.Name, "#", "stock", false, nil)
+	err = ch.QueueBind(queue.Name, "incremented", "stock", false, nil)
 	if err != nil {
-		fmt.Println(fmt.Errorf("%s: %s", "failed to bind the queue", err))
+		fmt.Println(fmt.Errorf("%s: %s", "failed to bind the incremented", err))
+	}
+
+	err = ch.QueueBind(queue.Name, "decremented", "stock", false, nil)
+	if err != nil {
+		fmt.Println(fmt.Errorf("%s: %s", "failed to bind the decremented", err))
 	}
 
 	msgs, err := ch.Consume(queue.Name, "", true, false, false, false, nil)
@@ -43,9 +45,13 @@ func (a *AMQPConsumer) Start() {
 		fmt.Println(fmt.Errorf("%s: %s", "failed to consume", err))
 	}
 
-	fmt.Println("------------ START QUEUE")
-	for msg := range msgs {
-		fmt.Println("------------ FROM QUEUE")
-		fmt.Println(msg)
-	}
+	stockChannel := make(chan string)
+
+	go func() {
+		for msg := range msgs {
+			stockChannel <- string(msg.Body)
+		}
+	}()
+
+	return stockChannel
 }

@@ -1,17 +1,17 @@
 version: "3.9"
 services:
-  api:
-    build: .
-    depends_on:
-      - stock-service
-      - database
-      - rabbitmq
-    ports:
-      - 3000:3000
-    env_file: ./.env
-    command: ["./resource/wait-for-postgres.sh", "", "/app"]
-    networks:
-      - app-network
+  # api:
+  #   build: .
+  #   depends_on:
+  #     - stock-service
+  #     - database
+  #     - rabbitmq
+  #   ports:
+  #     - 3000:3000
+  #   env_file: ./.env
+  #   command: ["./resource/wait-for-postgres.sh", "", "/app"]
+  #   networks:
+  #     - app-network
   rabbitmq:
     image: rabbitmq:3.8-management
     networks:

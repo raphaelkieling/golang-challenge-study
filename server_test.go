@@ -95,3 +95,45 @@ func TestShouldSaveANewOrder(t *testing.T) {
 	assert.Equal(t, string(result), string(data))
 	assert.Equal(t, body.StatusCode, 200)
 }
+
+func TestShouldntSaveANewOrderBecauseDontHaveProductQuantity(t *testing.T) {
+	// Mocking
+	orderCreatedExpected := datasource.Order{
+		Products: []datasource.OrderProduct{
+			{
+				Name:     "Test-Product-Name",
+				Quantity: 2,
+				Price:    10,
+			},
+		},
+		Total: 20.0,
+	}
+
+	mockOrderRepository := &mocks.OrderRepositoryMock{}
+	mockProductRepository := &mocks.ProductRepositoryMock{}
+
+	orderService := service.OrderService{
+		ProductRepository: mockProductRepository,
+		OrderRepository:   mockOrderRepository,
+	}
+
+	mockOrderRepository.On("Save", orderCreatedExpected).Return(orderCreatedExpected, nil)
+
+	mockedProducts := []datasource.Product{
+		{
+			Name:     "Test-Product-Name",
+			Price:    10,
+			Quantity: 1,
+		},
+	}
+	mockProductRepository.On("GetAllByName", mockedProducts[0].Name).Return(mockedProducts, nil)
+
+	server := createServer(ServerConfig{
+		orderService: &orderService,
+	})
+
+	req, _ := http.NewRequest("POST", "/orders", strings.NewReader(`{}`))
+	body, _ := server.Test(req)
+	assert.Equal(t, body.StatusCode, 409)
+	mockOrderRepository.AssertNumberOfCalls(t, "Save", 0)
+}
